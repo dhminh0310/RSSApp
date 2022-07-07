@@ -8,6 +8,15 @@ public class Feed {
     private String channel;
     private String imgUrl;
 
+    public Feed(String channel, String title, String url, String description, String imgUrl) {
+        this.title = title;
+        this.url = url;
+        this.description = description;
+        this.channel = channel;
+        this.imgUrl = imgUrl;
+    }
+
+
     public String getTitle() {
         return title;
     }

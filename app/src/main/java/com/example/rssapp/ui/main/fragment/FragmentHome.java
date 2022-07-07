@@ -22,6 +22,7 @@ import com.example.rssapp.R;
 import com.example.rssapp.data.model.Feed;
 import com.example.rssapp.helper.FetchFeedTask;
 import com.example.rssapp.ui.main.MainActivity;
+import com.example.rssapp.ui.main.adapter.RecyclerViewFeedAdapter;
 import com.example.rssapp.ui.newsDetails.NewsDetailsActivity;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCa
     private RecyclerView rvData;
     private FrameLayout loadingView;
     private ProgressBar pbLoading;
+    private RecyclerViewFeedAdapter adapter;
 
     @Nullable
     @Override
@@ -45,7 +47,7 @@ public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCa
         super.onViewCreated(view, savedInstanceState);
 
         mappingView(view);
-        doFetchFeed();
+        handleActionClick();
     }
 
     private void mappingView(View view) {
@@ -54,6 +56,11 @@ public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCa
         rvData = view.findViewById(R.id.rvData);
         loadingView = view.findViewById(R.id.loadingView);
         pbLoading = view.findViewById(R.id.pbLoading);
+        adapter = new RecyclerViewFeedAdapter();
+    }
+
+    private void handleActionClick() {
+        btnFetchData.setOnClickListener(view -> doFetchFeed());
     }
 
     private void doFetchFeed() {
@@ -90,7 +97,8 @@ public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCa
 
     @Override
     public void onFetchFeedComplete(List<Feed> data) {
-        Log.d("Fetch task", "onFetchFeedComplete: " + data);
+        rvData.setAdapter(adapter);
+        adapter.setListFeed(data);
         hideLoadingView();
     }
 

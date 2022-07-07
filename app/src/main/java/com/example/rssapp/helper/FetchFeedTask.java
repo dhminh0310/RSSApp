@@ -4,11 +4,15 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
+
 import com.example.rssapp.data.model.Feed;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +29,8 @@ public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPreExecute() {
-        urlLink = "https://vnexpress.net/rss";
+         //urlLink = "https://vnexpress.net/rss/tin-moi-nhat.rss";
+        urlLink = "https://cdn.24h.com.vn/upload/rss/tintuctrongngay.rss";
     }
 
     @Override
@@ -50,8 +55,6 @@ public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (success) {
-            // Fill RecyclerView
-            //mRecyclerView.setAdapter(new adapter(mData));
             if (callback != null) callback.onFetchFeedComplete(data);
         } else {
             if (callback != null) callback.onFetchFeedError();
@@ -60,11 +63,13 @@ public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
 
     private List<Feed> parseFeed(InputStream inputStream) throws XmlPullParserException,
             IOException {
+        String channel = null;
         String title = null;
         String link = null;
         String description = null;
+        String imgUrl = null;
         boolean isItem = false;
-        List<Feed> items = new ArrayList<>();
+        List<Feed> feeds = new ArrayList<>();
 
         try {
             XmlPullParser xmlPullParser = Xml.newPullParser();
@@ -93,42 +98,107 @@ public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
                     }
                 }
 
-                Log.d("MyXmlParser", "Parsing name ==> " + name);
-                String result = "";
-                if (xmlPullParser.next() == XmlPullParser.TEXT) {
-                    result = xmlPullParser.getText();
+                if (name.equalsIgnoreCase("channel") && eventType == XmlPullParser.START_TAG) {
+                    while (
+                            xmlPullParser.getEventType() == XmlPullParser.TEXT ||
+                                    !(xmlPullParser.getName().equalsIgnoreCase("title") &&
+                                            xmlPullParser.getEventType() == XmlPullParser.END_TAG)
+                    ) {
+                        if (xmlPullParser.getEventType() == XmlPullParser.TEXT) {
+                            channel = xmlPullParser.getText();
+                        }
+                        xmlPullParser.next();
+                    }
+                }
+
+                if (name.equalsIgnoreCase("description")
+                        && eventType == XmlPullParser.START_TAG
+                        && isItem) {
+                    while (
+                            xmlPullParser.getEventType() == XmlPullParser.TEXT ||
+                                    xmlPullParser.getEventType() == XmlPullParser.CDSECT ||
+                                    !(xmlPullParser.getName().equalsIgnoreCase("description") &&
+                                            xmlPullParser.getEventType() == XmlPullParser.END_TAG)
+                    ) {
+                        if(xmlPullParser.getEventType() == XmlPullParser.CDSECT){
+                            String descriptionString = xmlPullParser.getText();
+                            int startIndexImg = descriptionString.indexOf("src=");
+                            int endIndexImgSingleQuote = descriptionString.indexOf("'", startIndexImg + 6);
+                            int endIndexImgDoubleQuote = descriptionString.indexOf("\"", startIndexImg + 6);
+
+                            if(startIndexImg > - 1 && (endIndexImgSingleQuote > - 1 || endIndexImgDoubleQuote > -1)){
+                                if(endIndexImgSingleQuote > -1){
+                                    imgUrl = descriptionString.substring(
+                                            startIndexImg + 5,
+                                            endIndexImgSingleQuote
+                                    );
+                                }else{
+                                    imgUrl = descriptionString.substring(
+                                            startIndexImg + 5,
+                                            endIndexImgDoubleQuote
+                                    );
+                                }
+                            }
+
+                            int startIndexDescription = descriptionString.lastIndexOf(">");
+                            if(startIndexDescription > -1){
+                                description = descriptionString.substring(
+                                        startIndexDescription + 1
+                                );
+                            }
+                            break;
+                        }
+
+                        if (xmlPullParser.getName() != null &&
+                                xmlPullParser.getName().equalsIgnoreCase("img") &&
+                                xmlPullParser.getEventType() == XmlPullParser.START_TAG
+                        ) {
+                            imgUrl = xmlPullParser.getAttributeValue("", "src");
+                        }
+
+                        if (xmlPullParser.getEventType() == XmlPullParser.TEXT) {
+                            description = xmlPullParser.getText();
+                        }
+                        xmlPullParser.nextToken();
+                    }
+                }
+
+                if (isItem && xmlPullParser.next() == XmlPullParser.TEXT) {
+                    String result = xmlPullParser.getText();
                     xmlPullParser.nextTag();
+                    if (name.equalsIgnoreCase("title")) {
+                        title = result;
+                    } else if (name.equalsIgnoreCase("link")) {
+                        link = result;
+                    }
                 }
 
-                if (name.equalsIgnoreCase("title")) {
-                    title = result;
-                } else if (name.equalsIgnoreCase("link")) {
-                    link = result;
-                } else if (name.equalsIgnoreCase("description")) {
-                    description = result;
-                }
+//                Log.d("MyXmlParser", "channel: " + channel);
+//                Log.d("MyXmlParser", "title: " + title);
+//                Log.d("MyXmlParser", "link: " + link);
+//                Log.d("MyXmlParser", "description: " + description);
+//                Log.d("MyXmlParser", "imgUrl: " + imgUrl);
 
-                if (title != null && link != null && description != null) {
+                if (title != null && link != null && description != null && channel != null && imgUrl != null) {
                     if (isItem) {
-                        //viewModel item = new viewModel(title, link, description);
-                        Feed item = new Feed();
-                        items.add(item);
+                        Feed feed = new Feed(channel, title, link, description, imgUrl);
+                        feeds.add(feed);
                     }
 
                     title = null;
                     link = null;
                     description = null;
+                    imgUrl = null;
                     isItem = false;
                 }
             }
-
-            return items;
+            return feeds;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             inputStream.close();
         }
-        return items;
+        return feeds;
     }
 
     public interface IFetchFeedCallback {

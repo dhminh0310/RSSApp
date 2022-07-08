@@ -1,12 +1,12 @@
 package com.example.rssapp.ui.main.fragment;
 
+import static com.example.rssapp.helper.Constant.FEED_EXTRA_NAME;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -27,7 +27,8 @@ import com.example.rssapp.ui.newsDetails.NewsDetailsActivity;
 
 import java.util.List;
 
-public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCallback {
+public class FragmentHome extends Fragment
+        implements FetchFeedTask.IFetchFeedCallback, RecyclerViewFeedAdapter.IAdapterCallback {
 
     private EditText edtUrl;
     private ImageButton btnFetchData;
@@ -57,6 +58,7 @@ public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCa
         loadingView = view.findViewById(R.id.loadingView);
         pbLoading = view.findViewById(R.id.pbLoading);
         adapter = new RecyclerViewFeedAdapter();
+        adapter.setCallback(this);
     }
 
     private void handleActionClick() {
@@ -108,5 +110,12 @@ public class FragmentHome extends Fragment implements FetchFeedTask.IFetchFeedCa
         Toast.makeText(getActivity(),
                 "Something went wrong !",
                 Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onClickFeedItem(Feed feed) {
+        Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
+        intent.putExtra(FEED_EXTRA_NAME, feed);
+        getActivity().startActivity(intent);
     }
 }

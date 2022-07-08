@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +20,7 @@ import java.util.List;
 public class RecyclerViewFeedAdapter extends RecyclerView.Adapter<RecyclerViewFeedAdapter.FeedViewHolder> {
 
     private List<Feed> listFeeds = null;
+    private IAdapterCallback callback = null;
 
     @NonNull
     @Override
@@ -37,6 +39,11 @@ public class RecyclerViewFeedAdapter extends RecyclerView.Adapter<RecyclerViewFe
         holder.tvChannel.setText(currentFeed.getChannel());
         holder.tvTitle.setText(currentFeed.getTitle());
         holder.tvDescription.setText(currentFeed.getDescription());
+        holder.containerLayout.setOnClickListener(view -> {
+            if(callback != null){
+                callback.onClickFeedItem(currentFeed);
+            }
+        });
     }
 
     @Override
@@ -51,16 +58,26 @@ public class RecyclerViewFeedAdapter extends RecyclerView.Adapter<RecyclerViewFe
     }
 
     public class FeedViewHolder extends RecyclerView.ViewHolder {
+        ConstraintLayout containerLayout;
         ImageView ivImage;
         TextView tvChannel;
         TextView tvTitle;
         TextView tvDescription;
         public FeedViewHolder(@NonNull View itemView) {
             super(itemView);
+            containerLayout = itemView.findViewById(R.id.containerLayout);
             ivImage = itemView.findViewById(R.id.ivFeedImage);
             tvChannel = itemView.findViewById(R.id.tvChannel);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvDescription = itemView.findViewById(R.id.tvDescription);
         }
+    }
+
+    public interface IAdapterCallback{
+        void onClickFeedItem(Feed feed);
+    }
+
+    public void setCallback(IAdapterCallback callback) {
+        this.callback = callback;
     }
 }

@@ -1,6 +1,8 @@
 package com.example.rssapp.data.model;
 
-public class Feed {
+import java.io.Serializable;
+
+public class Feed implements Serializable {
 
     private String title;
     private String url;

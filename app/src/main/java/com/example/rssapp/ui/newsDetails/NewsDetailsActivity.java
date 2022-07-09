@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.example.rssapp.R;
 import com.example.rssapp.data.db.AppDatabase;
@@ -66,7 +67,12 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
     private void handleActionClick() {
         btnSave.setOnClickListener(view -> {
-            AppDatabase.getInstance(this).insertFeed(feed);
+            boolean isInsertSuccess = AppDatabase.getInstance(this).insertFeed(feed);
+            if(isInsertSuccess){
+                Toast.makeText(this, "Save feed successfully !", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(this, "Save feed error, please try again !", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

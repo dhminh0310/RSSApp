@@ -173,15 +173,9 @@ public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
                     }
                 }
 
-//                Log.d("MyXmlParser", "channel: " + channel);
-//                Log.d("MyXmlParser", "title: " + title);
-//                Log.d("MyXmlParser", "link: " + link);
-//                Log.d("MyXmlParser", "description: " + description);
-//                Log.d("MyXmlParser", "imgUrl: " + imgUrl);
-
                 if (title != null && link != null && description != null && channel != null && imgUrl != null) {
                     if (isItem) {
-                        Feed feed = new Feed(channel, title, link, description, imgUrl);
+                        Feed feed = new Feed(title, link, description, channel, imgUrl);
                         feeds.add(feed);
                     }
 

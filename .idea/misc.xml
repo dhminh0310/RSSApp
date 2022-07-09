@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/VuBao/RSSApp/app/src/main/res/drawable/ic_fetch_data.xml" value="0.1245" />
+        <entry key="..\:/VuBao/RSSApp/app/src/main/res/drawable/ic_saved.xml" value="0.1245" />
         <entry key="..\:/VuBao/RSSApp/app/src/main/res/layout/activity_main.xml" value="0.18" />
         <entry key="..\:/VuBao/RSSApp/app/src/main/res/layout/activity_news_details.xml" value="0.209375" />
         <entry key="..\:/VuBao/RSSApp/app/src/main/res/layout/feed_item.xml" value="0.33" />

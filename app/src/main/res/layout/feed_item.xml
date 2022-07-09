@@ -12,10 +12,11 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:scaleType="fitXY"/>
 
     <TextView
-        android:id="@+id/tvChannel"
+        android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,13 +26,15 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:textAlignment="center"
-        android:textAllCaps="true"/>
+        android:textAllCaps="true"
+        android:maxLines="2"
+        android:ellipsize="end"/>
 
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvChannel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tvChannel"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintStart_toEndOf="@id/ivFeedImage"
         app:layout_constraintEnd_toEndOf="parent"
         android:textColor="@color/black"
@@ -46,7 +49,7 @@
         android:id="@+id/tvDescription"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvChannel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivFeedImage"
         app:layout_constraintEnd_toEndOf="parent"

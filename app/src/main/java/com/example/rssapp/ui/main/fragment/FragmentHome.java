@@ -4,6 +4,7 @@ import static com.example.rssapp.helper.Constant.FEED_EXTRA_NAME;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ public class FragmentHome extends Fragment
 
     private EditText edtUrl;
     private ImageButton btnFetchData;
-    private RecyclerView rvData;
+    private RecyclerView rvFeeds;
     private FrameLayout loadingView;
     private ProgressBar pbLoading;
     private RecyclerViewFeedAdapter adapter;
@@ -54,7 +55,7 @@ public class FragmentHome extends Fragment
     private void mappingView(View view) {
         edtUrl = view.findViewById(R.id.edtUrl);
         btnFetchData = view.findViewById(R.id.btnFetchData);
-        rvData = view.findViewById(R.id.rvData);
+        rvFeeds = view.findViewById(R.id.rvData);
         loadingView = view.findViewById(R.id.loadingView);
         pbLoading = view.findViewById(R.id.pbLoading);
         adapter = new RecyclerViewFeedAdapter();
@@ -99,7 +100,7 @@ public class FragmentHome extends Fragment
 
     @Override
     public void onFetchFeedComplete(List<Feed> data) {
-        rvData.setAdapter(adapter);
+        rvFeeds.setAdapter(adapter);
         adapter.setListFeed(data);
         hideLoadingView();
     }

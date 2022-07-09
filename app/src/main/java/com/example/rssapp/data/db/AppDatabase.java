@@ -99,9 +99,31 @@ public class AppDatabase extends SQLiteOpenHelper {
         return feeds;
     }
 
+    public List<Feed> getFeedsSortedByChannel() {
+        List<Feed> feeds = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE_FEED_NAME + " ORDER BY " + CHANNEL + " DESC";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                Feed feed = new Feed(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5));
+                feeds.add(feed);
+            }while (cursor.moveToNext());
+        }
+        return feeds;
+    }
+
     public List<Feed> searchFeedWithTitle(String title) {
         List<Feed> feeds = new ArrayList<>();
-        String query = "SELECT * FROM " + TABLE_FEED_NAME + " WHERE " + TITLE + " LIKE '" + "%" + title + "%'" ;
+        String query = "SELECT * FROM " + TABLE_FEED_NAME + " WHERE " + TITLE + " LIKE '" + "%" + title + "%'" + " ORDER BY " + CHANNEL + " DESC" ;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);

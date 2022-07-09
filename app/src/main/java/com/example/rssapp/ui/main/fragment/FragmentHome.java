@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -63,12 +64,19 @@ public class FragmentHome extends Fragment
     }
 
     private void handleActionClick() {
-        btnFetchData.setOnClickListener(view -> doFetchFeed());
+        btnFetchData.setOnClickListener(view -> {
+            String url = edtUrl.getText().toString().trim();
+            if (!url.isEmpty() && URLUtil.isValidUrl(url)) {
+                doFetchFeed(url);
+            } else {
+                Toast.makeText(getActivity(), "Invalid url", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void doFetchFeed() {
+    private void doFetchFeed(String url) {
         showLoadingView();
-        FetchFeedTask task = new FetchFeedTask("");
+        FetchFeedTask task = new FetchFeedTask(url);
         task.setCallback(this);
         task.execute((Void) null);
     }
@@ -100,6 +108,7 @@ public class FragmentHome extends Fragment
 
     @Override
     public void onFetchFeedComplete(List<Feed> data) {
+        Log.d("TAG", "onFetchFeedComplete: " + data.size());
         rvFeeds.setAdapter(adapter);
         adapter.setListFeed(data);
         hideLoadingView();

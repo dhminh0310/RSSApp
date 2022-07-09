@@ -19,18 +19,18 @@ import java.util.List;
 
 public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
 
-    public FetchFeedTask(String urlLink) {
-        this.urlLink = urlLink;
-    }
-
     private String urlLink;
     private List<Feed> data;
     private IFetchFeedCallback callback;
 
+    public FetchFeedTask(String urlLink) {
+        this.urlLink = urlLink;
+    }
+
     @Override
     protected void onPreExecute() {
-         //urlLink = "https://vnexpress.net/rss/tin-moi-nhat.rss";
-        urlLink = "https://cdn.24h.com.vn/upload/rss/tintuctrongngay.rss";
+        if (!urlLink.startsWith("http://") && !urlLink.startsWith("https://"))
+            urlLink = "http://" + urlLink;
     }
 
     @Override
@@ -39,9 +39,6 @@ public class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
             return false;
 
         try {
-            if (!urlLink.startsWith("http://") && !urlLink.startsWith("https://"))
-                urlLink = "http://" + urlLink;
-
             URL url = new URL(urlLink);
             InputStream inputStream = url.openConnection().getInputStream();
             data = parseFeed(inputStream);

@@ -7,13 +7,12 @@
 
     <EditText
         android:id="@+id/edtSearch"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Search..."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@id/btnSearch"/>
 
     <ImageButton
         android:id="@+id/btnSearch"
@@ -21,8 +20,9 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_search"
-        app:layout_constraintRight_toRightOf="@id/edtSearch"
-        app:layout_constraintTop_toTopOf="@id/edtSearch" />
+        app:layout_constraintTop_toTopOf="@+id/edtSearch"
+        app:layout_constraintBottom_toBottomOf="@+id/edtSearch"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSavedFeeds"

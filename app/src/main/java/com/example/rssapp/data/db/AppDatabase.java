@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.rssapp.data.model.Feed;
 
@@ -141,6 +142,18 @@ public class AppDatabase extends SQLiteOpenHelper {
             }while (cursor.moveToNext());
         }
         return feeds;
+    }
+
+    public boolean deleteFeed(int feedId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        long id = db.delete(
+                TABLE_FEED_NAME,
+                ID + " = " + feedId,
+                null
+        );
+        db.close();
+        return id > -1;
     }
 }
 

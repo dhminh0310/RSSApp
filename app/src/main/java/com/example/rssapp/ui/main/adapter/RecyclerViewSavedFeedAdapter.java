@@ -82,17 +82,25 @@ public class RecyclerViewSavedFeedAdapter extends RecyclerView.Adapter<RecyclerV
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvDescription = itemView.findViewById(R.id.tvDescription);
         }
-        public void bindData(CombineDataFeed currentFeed){
+        public void bindData(CombineDataFeed currentCombineData){
             Glide.with(itemView.getContext())
-                    .load(currentFeed.getImgUrl())
+                    .load(currentCombineData.getImgUrl())
                     .into(ivImage);
-            tvChannel.setText(currentFeed.getChannel());
-            tvTitle.setText(currentFeed.getTitle());
-            tvDescription.setText(currentFeed.getDescription());
+            tvChannel.setText(currentCombineData.getChannel());
+            tvTitle.setText(currentCombineData.getTitle());
+            tvDescription.setText(currentCombineData.getDescription());
+
             containerLayout.setOnClickListener(view -> {
                 if(callback != null){
-                    callback.onClickFeedItem(currentFeed);
+                    callback.onClickFeedItem(currentCombineData);
                 }
+            });
+
+            containerLayout.setOnLongClickListener(view -> {
+                if(callback != null){
+                    callback.onLongClickFeedItem(currentCombineData);
+                }
+                return false;
             });
         }
     }
@@ -111,6 +119,7 @@ public class RecyclerViewSavedFeedAdapter extends RecyclerView.Adapter<RecyclerV
 
     public interface IAdapterCallback{
         void onClickFeedItem(CombineDataFeed feed);
+        void onLongClickFeedItem(CombineDataFeed feed);
     }
 
     public void setCallback(IAdapterCallback callback) {

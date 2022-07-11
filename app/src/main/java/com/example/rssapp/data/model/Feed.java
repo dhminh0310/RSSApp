@@ -27,6 +27,9 @@ public class Feed implements Serializable {
         this.imgUrl = imgUrl;
     }
 
+    public Feed() {
+    }
+
     public int getId() {
         return id;
     }

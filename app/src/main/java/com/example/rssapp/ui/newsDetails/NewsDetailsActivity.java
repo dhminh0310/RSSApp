@@ -1,6 +1,7 @@
 package com.example.rssapp.ui.newsDetails;
 
 import static com.example.rssapp.helper.Constant.FEED_EXTRA_NAME;
+import static com.example.rssapp.helper.Constant.IS_SAVED_FEED_EXTRA_NAME;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,12 +26,14 @@ public class NewsDetailsActivity extends AppCompatActivity {
     private WebView webView;
     private FloatingActionButton btnSave;
     private Feed feed = null;
+    private boolean isSavedFeed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
         feed = (Feed) getIntent().getSerializableExtra(FEED_EXTRA_NAME);
+        isSavedFeed = (boolean) getIntent().getBooleanExtra(IS_SAVED_FEED_EXTRA_NAME, false);
         mappingView();
         setUpToolbarDetail();
         setUpWebView();
@@ -41,12 +44,15 @@ public class NewsDetailsActivity extends AppCompatActivity {
         tbDetails = findViewById(R.id.tbDetails);
         webView = findViewById(R.id.webViewFeed);
         btnSave = findViewById(R.id.btnSave);
+        if (isSavedFeed) {
+            btnSave.setVisibility(View.GONE);
+        }
     }
 
     private void setUpToolbarDetail() {
         setSupportActionBar(tbDetails);
 
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -59,18 +65,20 @@ public class NewsDetailsActivity extends AppCompatActivity {
     }
 
     private void setUpWebView() {
-        if(feed != null){
+        if (feed != null) {
             webView.setWebViewClient(new WebViewClient());
             webView.loadUrl(feed.getUrl());
         }
     }
 
     private void handleActionClick() {
+        if (feed == null) return;
+
         btnSave.setOnClickListener(view -> {
             boolean isInsertSuccess = AppDatabase.getInstance(this).insertFeed(feed);
-            if(isInsertSuccess){
+            if (isInsertSuccess) {
                 Toast.makeText(this, "Save feed successfully !", Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 Toast.makeText(this, "Save feed error, please try again !", Toast.LENGTH_SHORT).show();
             }
         });

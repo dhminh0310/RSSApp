@@ -1,18 +1,23 @@
 package com.example.rssapp.ui.main.fragment;
 
 import static com.example.rssapp.helper.Constant.FEED_EXTRA_NAME;
+import static com.example.rssapp.helper.Constant.IS_SAVED_FEED_EXTRA_NAME;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,12 +27,10 @@ import com.example.rssapp.data.model.CombineDataFeed;
 import com.example.rssapp.data.model.Feed;
 import com.example.rssapp.helper.ViewHolderType;
 import com.example.rssapp.ui.main.MainActivity;
-import com.example.rssapp.ui.main.adapter.RecyclerViewFeedAdapter;
 import com.example.rssapp.ui.main.adapter.RecyclerViewSavedFeedAdapter;
 import com.example.rssapp.ui.newsDetails.NewsDetailsActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FragmentSavedNews extends Fragment implements RecyclerViewSavedFeedAdapter.IAdapterCallback {
@@ -63,6 +66,7 @@ public class FragmentSavedNews extends Fragment implements RecyclerViewSavedFeed
             hideEmptyView();
             adapter = new RecyclerViewSavedFeedAdapter();
             adapter.setListFeed(getListCombineData(listSavedFeeds));
+            adapter.setCallback(this);
             rvSavedFeeds.setAdapter(adapter);
         } else {
             showEmptyView(false);
@@ -82,6 +86,7 @@ public class FragmentSavedNews extends Fragment implements RecyclerViewSavedFeed
             }
             listCombineData.add(new CombineDataFeed(
                     ViewHolderType.FEED,
+                    listFeed.get(i).getId(),
                     listFeed.get(i).getTitle(),
                     listFeed.get(i).getUrl(),
                     listFeed.get(i).getDescription(),
@@ -144,6 +149,39 @@ public class FragmentSavedNews extends Fragment implements RecyclerViewSavedFeed
     public void onClickFeedItem(CombineDataFeed combineDataFeed) {
         Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
         intent.putExtra(FEED_EXTRA_NAME, combineDataFeed);
+        intent.putExtra(IS_SAVED_FEED_EXTRA_NAME, true);
         getActivity().startActivity(intent);
+    }
+
+    @Override
+    public void onLongClickFeedItem(CombineDataFeed combineDataFeed) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Delete feed");
+        builder.setMessage("Are you sure ?");
+
+        builder.setPositiveButton("Ok", (dialog, i) -> {
+            boolean isSuccess = AppDatabase.getInstance(getActivity()).deleteFeed(combineDataFeed.getId());
+            if(!isSuccess){
+                Toast.makeText(getActivity(),
+                        "Something went wrong when delete feed",
+                        Toast.LENGTH_SHORT).show();
+            }else {
+                List<Feed> listSavedFeeds = AppDatabase.getInstance(getActivity()).getFeedsSortedByChannel();
+                if (listSavedFeeds != null && listSavedFeeds.size() > 0) {
+                    adapter.setListFeed(getListCombineData(listSavedFeeds));
+                } else {
+                    showEmptyView(false);
+                }
+            }
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.dismiss();
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

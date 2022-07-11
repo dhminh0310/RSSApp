@@ -6,7 +6,7 @@
 
     <EditText
         android:id="@+id/edtUrl"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,7 +17,8 @@
         android:id="@+id/btnFetchData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edtUrl"
+        app:layout_constraintBottom_toBottomOf="@id/edtUrl"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_fetch_data"
         android:backgroundTint="@android:color/transparent"

@@ -42,6 +42,11 @@ public class FragmentNewsDetails extends Fragment {
     private void mappingView(View view) {
         webView = view.findViewById(R.id.webViewFeedFragment);
         btnSave = view.findViewById(R.id.btnSaveFragment);
+
+        if(feed == null){
+            btnSave.setVisibility(View.GONE);
+        }
+
         if (isSavedFeed) {
             btnSave.setVisibility(View.GONE);
         }
@@ -69,6 +74,7 @@ public class FragmentNewsDetails extends Fragment {
 
     public void setFeed(Feed feed){
         this.feed = feed;
+        btnSave.setVisibility(View.VISIBLE);
         webView.loadUrl(feed.getUrl());
     }
 }

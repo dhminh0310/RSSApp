@@ -126,6 +126,7 @@ public class FragmentHome extends Fragment
 
     @Override
     public void onFetchFeedComplete(List<Feed> data) {
+        listFeeds.clear();
         listFeeds.addAll(data);
         rvFeeds.setAdapter(adapter);
         adapter.setListFeed(data);

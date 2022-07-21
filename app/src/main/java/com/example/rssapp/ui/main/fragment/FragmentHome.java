@@ -1,8 +1,10 @@
 package com.example.rssapp.ui.main.fragment;
 
 import static com.example.rssapp.helper.Constant.FEED_EXTRA_NAME;
+import static com.example.rssapp.helper.Constant.LIST_FEEDS_EXTRA_NAME;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssapp.R;
@@ -27,6 +30,8 @@ import com.example.rssapp.ui.main.MainActivity;
 import com.example.rssapp.ui.main.adapter.RecyclerViewFeedAdapter;
 import com.example.rssapp.ui.newsDetails.NewsDetailsActivity;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentHome extends Fragment
@@ -38,6 +43,7 @@ public class FragmentHome extends Fragment
     private FrameLayout loadingView;
     private ProgressBar pbLoading;
     private RecyclerViewFeedAdapter adapter;
+    private ArrayList<Feed> listFeeds = new ArrayList<>();
 
     @Nullable
     @Override
@@ -49,8 +55,13 @@ public class FragmentHome extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if(savedInstanceState != null && savedInstanceState.containsKey(LIST_FEEDS_EXTRA_NAME)){
+            listFeeds = savedInstanceState.getParcelableArrayList(LIST_FEEDS_EXTRA_NAME);
+        }
+
         mappingView(view);
         handleActionClick();
+        showPreviousDataFeeds();
     }
 
     private void mappingView(View view) {
@@ -61,6 +72,13 @@ public class FragmentHome extends Fragment
         pbLoading = view.findViewById(R.id.pbLoading);
         adapter = new RecyclerViewFeedAdapter();
         adapter.setCallback(this);
+    }
+
+    private void showPreviousDataFeeds() {
+        if(listFeeds.size() > 0){
+            adapter.setListFeed(listFeeds);
+            rvFeeds.setAdapter(adapter);
+        }
     }
 
     private void handleActionClick() {
@@ -108,7 +126,7 @@ public class FragmentHome extends Fragment
 
     @Override
     public void onFetchFeedComplete(List<Feed> data) {
-        Log.d("TAG", "onFetchFeedComplete: " + data.size());
+        listFeeds.addAll(data);
         rvFeeds.setAdapter(adapter);
         adapter.setListFeed(data);
         hideLoadingView();
@@ -124,8 +142,26 @@ public class FragmentHome extends Fragment
 
     @Override
     public void onClickFeedItem(Feed feed) {
-        Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
-        intent.putExtra(FEED_EXTRA_NAME, feed);
-        getActivity().startActivity(intent);
+        FragmentNewsDetails fragmentFeedDetails = (FragmentNewsDetails) this.getChildFragmentManager().findFragmentById(R.id.fragmentDetails);
+        boolean isLandScape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+        if (isLandScape && fragmentFeedDetails != null && fragmentFeedDetails.isVisible()) {
+            //case landscape
+            fragmentFeedDetails.setFeed(feed);
+
+        } else {
+            //case normal
+            Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
+            intent.putExtra(FEED_EXTRA_NAME, (Serializable) feed);
+            getActivity().startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        if(listFeeds.size() > 0){
+            outState.putParcelableArrayList(LIST_FEEDS_EXTRA_NAME, listFeeds);
+        }
+        super.onSaveInstanceState(outState);
     }
 }

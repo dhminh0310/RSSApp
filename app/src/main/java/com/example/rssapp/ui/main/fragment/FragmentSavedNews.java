@@ -6,6 +6,7 @@ import static com.example.rssapp.helper.Constant.IS_SAVED_FEED_EXTRA_NAME;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.example.rssapp.ui.main.MainActivity;
 import com.example.rssapp.ui.main.adapter.RecyclerViewSavedFeedAdapter;
 import com.example.rssapp.ui.newsDetails.NewsDetailsActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,7 +150,7 @@ public class FragmentSavedNews extends Fragment implements RecyclerViewSavedFeed
     @Override
     public void onClickFeedItem(CombineDataFeed combineDataFeed) {
         Intent intent = new Intent(getActivity(), NewsDetailsActivity.class);
-        intent.putExtra(FEED_EXTRA_NAME, combineDataFeed);
+        intent.putExtra(FEED_EXTRA_NAME, (Serializable) combineDataFeed);
         intent.putExtra(IS_SAVED_FEED_EXTRA_NAME, true);
         getActivity().startActivity(intent);
     }

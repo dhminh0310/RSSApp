@@ -1,8 +1,11 @@
 package com.example.rssapp.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class Feed implements Serializable {
+public class Feed implements Serializable, Parcelable {
     private int id;
     private String title;
     private String url;
@@ -29,6 +32,27 @@ public class Feed implements Serializable {
 
     public Feed() {
     }
+
+    protected Feed(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        url = in.readString();
+        description = in.readString();
+        channel = in.readString();
+        imgUrl = in.readString();
+    }
+
+    public static final Creator<Feed> CREATOR = new Creator<Feed>() {
+        @Override
+        public Feed createFromParcel(Parcel in) {
+            return new Feed(in);
+        }
+
+        @Override
+        public Feed[] newArray(int size) {
+            return new Feed[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -76,5 +100,20 @@ public class Feed implements Serializable {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(url);
+        parcel.writeString(description);
+        parcel.writeString(channel);
+        parcel.writeString(imgUrl);
     }
 }

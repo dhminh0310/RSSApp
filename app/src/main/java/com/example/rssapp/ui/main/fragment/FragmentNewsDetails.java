@@ -55,9 +55,9 @@ public class FragmentNewsDetails extends Fragment {
     }
 
     private void handleActionClick() {
-        if (feed == null) return;
-
         btnSave.setOnClickListener(view -> {
+            if (feed == null) return;
+
             boolean isInsertSuccess = AppDatabase.getInstance(getActivity()).insertFeed(feed);
             if (isInsertSuccess) {
                 Toast.makeText(getActivity(), "Save feed successfully !", Toast.LENGTH_SHORT).show();

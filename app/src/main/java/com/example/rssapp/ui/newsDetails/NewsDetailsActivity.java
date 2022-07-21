@@ -72,9 +72,10 @@ public class NewsDetailsActivity extends AppCompatActivity {
     }
 
     private void handleActionClick() {
-        if (feed == null) return;
 
         btnSave.setOnClickListener(view -> {
+            if (feed == null) return;
+
             boolean isInsertSuccess = AppDatabase.getInstance(this).insertFeed(feed);
             if (isInsertSuccess) {
                 Toast.makeText(this, "Save feed successfully !", Toast.LENGTH_SHORT).show();
